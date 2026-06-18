@@ -115,7 +115,7 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 .cloud button .n{color:var(--ink3);font-size:.8rem;margin-left:6px}
 
 /* reader */
-.reader{max-width:700px;margin:0 auto;padding:46px 24px 90px}
+.reader{max-width:880px;margin:0 auto;padding:46px 24px 90px}
 .reader .back{font-family:var(--ui);font-size:.82rem;color:var(--ink3);display:inline-block;margin-bottom:32px;cursor:pointer}
 .reader .ribbon{font-family:var(--ui);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px}
 .reader h1{font-size:clamp(2rem,5vw,3rem);line-height:1.12;margin:0 0 14px;font-weight:700}
