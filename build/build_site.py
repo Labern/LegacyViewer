@@ -179,7 +179,7 @@ const WORKS = __DATA__;
 const TYPES = __TYPES__;
 // Only literary forms get their own browse-by-form chip. Everything else
 // (Blog, Album Review, Journalism, Song, …) is still reachable via "All".
-const LITERARY = ["Poem","Sonnet","Ode","Short Story","Novel","Essay","Prose","Play","Extract"];
+const LITERARY = ["Poem","Sonnet","Ode","Short Story","Novel","Essay","Play","Extract"];
 WORKS.forEach((w,i)=>{w.i=i; w._t=(w.t||'').toLowerCase(); w._txt=(w.txt||'').toLowerCase(); w._g=(w.g||[]).map(s=>s.toLowerCase());});
 
 /* ---------- theme lexicon: query word -> related words ---------- */
