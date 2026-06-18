@@ -109,6 +109,11 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 
 /* browse */
 .section-title{font-family:var(--ui);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);margin:44px 0 14px}
+.browse-header{font-family:var(--ui);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);margin:44px 0 14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.browse-header span{color:var(--ink3)}
+.browse-tab{font-family:var(--ui);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;background:none;border:none;border-bottom:1px solid transparent;padding:0;cursor:pointer;color:var(--ink3);transition:.15s;line-height:1}
+.browse-tab:hover{color:var(--accent)}
+.browse-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .cloud{display:flex;flex-wrap:wrap;gap:10px}
 .cloud button{font-family:var(--serif);cursor:pointer;background:var(--bg2);border:1px solid var(--line);color:var(--ink2);border-radius:10px;padding:7px 14px;transition:.15s;font-size:.96rem}
 .cloud button:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
@@ -348,18 +353,63 @@ function renderResults(q){
     +'<div class="grid">'+top.map(r=>cardHTML(r.w, r.matched)).join('')+'</div>';
 }
 
-let activeType=null;
+let browseMode='form', activeType=null, activeYear=null, activeTheme=null;
+
 function renderBrowse(){
   const browse = el('#browseArea');
-  const typeCounts={}; WORKS.forEach(w=>typeCounts[w.y]=(typeCounts[w.y]||0)+1);
-  const list = activeType?WORKS.filter(w=>w.y===activeType):WORKS.slice();
-  let html='<div class="section-title">Browse by form</div><div class="cloud">';
-  html+='<button class="'+(activeType?'':'active')+'" data-type="">All<span class="n">'+WORKS.length+'</span></button>';
-  for(const t of LITERARY){ if(!typeCounts[t]) continue; html+='<button class="'+(activeType===t?'active':'')+'" data-type="'+esc(t)+'">'+esc(t)+'<span class="n">'+typeCounts[t]+'</span></button>'; }
-  html+='</div>';
-  const label = activeType?activeType:'All works';
-  html+='<div class="section-title">'+esc(label)+' · '+list.length+'</div>';
-  html+='<div class="grid">'+list.map(w=>cardHTML(w,null)).join('')+'</div>';
+  const modes=['form','year','theme'];
+  let html='<div class="browse-header"><span>Browse by</span>'
+    +modes.map(m=>'<button class="browse-tab'+(browseMode===m?' active':'')+'" data-mode="'+m+'">'+m+'</button>').join('<span>·</span>')
+    +'</div>';
+
+  if(browseMode==='form'){
+    const typeCounts={};
+    WORKS.forEach(w=>typeCounts[w.y]=(typeCounts[w.y]||0)+1);
+    const list=activeType?WORKS.filter(w=>w.y===activeType):WORKS.slice();
+    html+='<div class="cloud">';
+    html+='<button class="'+(activeType?'':'active')+'" data-type="">All<span class="n">'+WORKS.length+'</span></button>';
+    for(const t of LITERARY){ if(!typeCounts[t]) continue; html+='<button class="'+(activeType===t?'active':'')+'" data-type="'+esc(t)+'">'+esc(t)+'<span class="n">'+typeCounts[t]+'</span></button>'; }
+    html+='</div>';
+    const label=activeType?activeType:'All works';
+    html+='<div class="section-title">'+esc(label)+' · '+list.length+'</div>';
+    html+='<div class="grid">'+list.map(w=>cardHTML(w,null)).join('')+'</div>';
+
+  } else if(browseMode==='year'){
+    const yearCounts={};
+    WORKS.forEach(w=>{ if(w.yr) yearCounts[w.yr]=(yearCounts[w.yr]||0)+1; });
+    const years=Object.keys(yearCounts).map(Number).sort((a,b)=>b-a);
+    const dated=WORKS.filter(w=>w.yr);
+    const list=activeYear?dated.filter(w=>w.yr===activeYear):dated.slice().sort((a,b)=>b.yr-a.yr||b.d.localeCompare(a.d));
+    html+='<div class="cloud">';
+    html+='<button class="'+(activeYear?'':'active')+'" data-year="">All<span class="n">'+dated.length+'</span></button>';
+    for(const y of years){ html+='<button class="'+(activeYear===y?'active':'')+'" data-year="'+y+'">'+y+'<span class="n">'+yearCounts[y]+'</span></button>'; }
+    html+='</div>';
+    const label=activeYear?String(activeYear):'All years';
+    html+='<div class="section-title">'+esc(label)+' · '+list.length+'</div>';
+    html+='<div class="grid">'+list.map(w=>cardHTML(w,null)).join('')+'</div>';
+
+  } else {
+    const themeKeys=Object.keys(THEMES);
+    const themeCounts={};
+    for(const tk of themeKeys){
+      const words=THEMES[tk];
+      themeCounts[tk]=WORKS.filter(w=>words.some(wd=>w._txt.includes(wd)||w._t.includes(wd))).length;
+    }
+    const list=activeTheme
+      ? WORKS.filter(w=>THEMES[activeTheme].some(wd=>w._txt.includes(wd)||w._t.includes(wd)))
+      : WORKS.slice();
+    html+='<div class="cloud">';
+    html+='<button class="'+(activeTheme?'':'active')+'" data-theme="">All<span class="n">'+WORKS.length+'</span></button>';
+    for(const tk of themeKeys){
+      if(!themeCounts[tk]) continue;
+      const lbl=tk.charAt(0).toUpperCase()+tk.slice(1);
+      html+='<button class="'+(activeTheme===tk?'active':'')+'" data-theme="'+esc(tk)+'">'+esc(lbl)+'<span class="n">'+themeCounts[tk]+'</span></button>';
+    }
+    html+='</div>';
+    const label=activeTheme?(activeTheme.charAt(0).toUpperCase()+activeTheme.slice(1)):'All works';
+    html+='<div class="section-title">'+esc(label)+' · '+list.length+'</div>';
+    html+='<div class="grid">'+list.map(w=>cardHTML(w,null)).join('')+'</div>';
+  }
   browse.innerHTML=html;
 }
 
@@ -529,8 +579,14 @@ el('#clear').addEventListener('click', ()=>{qInput.value='';onQuery();qInput.foc
 document.body.addEventListener('click', e=>{
   const card=e.target.closest('.card[data-s]');
   if(card){ location.hash='#/w/'+encodeURIComponent(card.dataset.s); return; }
+  const mBtn=e.target.closest('button[data-mode]');
+  if(mBtn){ browseMode=mBtn.dataset.mode; activeType=null; activeYear=null; activeTheme=null; renderBrowse(); return; }
   const tBtn=e.target.closest('button[data-type]');
   if(tBtn){ activeType=tBtn.dataset.type||null; renderBrowse(); return; }
+  const yBtn=e.target.closest('button[data-year]');
+  if(yBtn){ activeYear=yBtn.dataset.year?Number(yBtn.dataset.year):null; renderBrowse(); return; }
+  const thBtn=e.target.closest('button[data-theme]');
+  if(thBtn){ activeTheme=thBtn.dataset.theme||null; renderBrowse(); return; }
   const tag=e.target.closest('[data-tag]');
   if(tag){ qInput.value=tag.dataset.tag; if(location.hash) location.hash=''; sbox.classList.add('has-text'); renderResults(qInput.value); window.scrollTo({top:0,behavior:'smooth'}); return; }
   if(e.target.id==='backLink'){ location.hash=''; return; }
