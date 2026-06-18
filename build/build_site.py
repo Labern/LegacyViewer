@@ -11,11 +11,14 @@ records = json.load(open(f"{OUT}/_records.json"))
 PROSE_TYPES = {"Short Story", "Novel", "Extract"}
 
 def normalize_prose(html):
-    # Collapse runs of 2+ <br> (paragraph breaks in WordPress exports) into </p><p>
+    # Collapse runs of 2+ <br> into paragraph breaks
     html = re.sub(r'(\s*<br\s*/?>\s*){2,}', '</p><p>', html, flags=re.I)
-    # Clean up <p> directly after an opening <p> tag or at the very start
-    html = re.sub(r'<p>\s*</p>', '', html, flags=re.I)
-    html = re.sub(r'(<p[^>]*>)\s*</p><p>', r'\1', html, flags=re.I)
+    # Remove stray single <br> between block elements (redundant whitespace)
+    html = re.sub(r'(</p>)\s*(<br\s*/?>\s*)+(<p)', r'\1\3', html, flags=re.I)
+    # Remove leading <br> at start of content
+    html = re.sub(r'^(\s*<br\s*/?>\s*)+', '', html, flags=re.I)
+    # Clean up empty <p> tags
+    html = re.sub(r'<p[^>]*>\s*</p>', '', html, flags=re.I)
     return html.strip()
 
 # trim payload to what the page needs
@@ -122,11 +125,11 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 
 /* browse */
 .section-title{font-family:var(--ui);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);margin:44px 0 14px}
-.browse-header{font-family:var(--ui);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:44px 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.browse-header{font-family:var(--ui);font-size:.96rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin:44px 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .browse-switch{display:inline-flex;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:3px;gap:2px}
-.browse-tab{font-family:var(--ui);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;background:none;border:none;border-radius:5px;padding:5px 13px;cursor:pointer;color:var(--ink2);transition:.15s;line-height:1}
+.browse-tab{font-family:var(--ui);font-size:.96rem;letter-spacing:.06em;text-transform:uppercase;background:none;border:none;border-radius:5px;padding:5px 14px;cursor:pointer;color:var(--ink2);transition:.15s;line-height:1}
 .browse-tab:hover{color:var(--accent)}
-.browse-tab.active{background:var(--accent);color:#fff}
+.browse-tab.active{background:#a78bfa;color:#fff}
 .cloud{display:flex;flex-wrap:wrap;gap:10px}
 .cloud button{font-family:var(--serif);cursor:pointer;background:var(--bg2);border:1px solid var(--line);color:var(--ink2);border-radius:10px;padding:7px 14px;transition:.15s;font-size:.96rem}
 .cloud button:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
@@ -136,7 +139,7 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 
 /* reader */
 .reader{max-width:880px;margin:0 auto;padding:46px 24px 90px 120px}
-.reader.story{max-width:980px;padding:46px 48px 90px 48px}
+.reader.story{max-width:890px;padding:46px 48px 90px 48px}
 .reader.story .prose{font-size:clamp(0.80rem,0.60rem + 0.75vw,1.02rem);line-height:1.8}
 .reader .back{font-family:var(--ui);font-size:.82rem;color:var(--ink3);display:inline-block;margin-bottom:32px;cursor:pointer}
 .reader .ribbon{font-family:var(--ui);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px}
