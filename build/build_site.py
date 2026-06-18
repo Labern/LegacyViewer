@@ -667,6 +667,64 @@ const scrollTopBtn=el('#scrollTop');
 window.addEventListener('scroll',()=>scrollTopBtn.classList.toggle('visible',window.scrollY>300),{passive:true});
 scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 
+// idle shooting star
+(function(){
+  const cvs=document.createElement('canvas');
+  cvs.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:999;width:100%;height:100%';
+  document.body.appendChild(cvs);
+  const ctx=cvs.getContext('2d');
+  let W,H;
+  function resize(){W=cvs.width=innerWidth;H=cvs.height=innerHeight;}
+  resize();
+  window.addEventListener('resize',resize,{passive:true});
+  let idleTimer=null,raf=null,gen=0;
+  function shootStar(myGen){
+    if(myGen!==gen) return;
+    const th=document.documentElement.dataset.theme;
+    const col=th==='zesty'?'#a78bfa':th==='dark'?'#f06aa0':'#d23c77';
+    const sx=Math.random()*W*.5,sy=0;
+    const ang=Math.PI/5+Math.random()*.35;
+    const len=65+Math.random()*55;
+    const dur=650+Math.random()*350;
+    const t0=performance.now();
+    function frame(now){
+      if(myGen!==gen){ctx.clearRect(0,0,W,H);return;}
+      const p=Math.min((now-t0)/dur,1);
+      const ease=p<.5?2*p*p:-1+(4-2*p)*p;
+      const d=ease*Math.hypot(W,H)*.7;
+      const hx=sx+Math.cos(ang)*d,hy=sy+Math.sin(ang)*d;
+      const alpha=Math.sin(p*Math.PI);
+      ctx.clearRect(0,0,W,H);
+      const g=ctx.createLinearGradient(hx-Math.cos(ang)*len,hy-Math.sin(ang)*len,hx,hy);
+      g.addColorStop(0,'rgba(255,255,255,0)');
+      g.addColorStop(.65,`rgba(255,255,255,${alpha*.55})`);
+      g.addColorStop(1,col);
+      ctx.save();
+      ctx.globalAlpha=alpha;
+      ctx.strokeStyle=g;ctx.lineWidth=2;
+      ctx.shadowColor=col;ctx.shadowBlur=18;
+      ctx.beginPath();
+      ctx.moveTo(hx-Math.cos(ang)*len,hy-Math.sin(ang)*len);
+      ctx.lineTo(hx,hy);ctx.stroke();
+      ctx.beginPath();ctx.arc(hx,hy,2.2,0,Math.PI*2);
+      ctx.fillStyle='#fff';ctx.shadowBlur=10;ctx.fill();
+      ctx.restore();
+      if(p<1) raf=requestAnimationFrame(frame);
+      else setTimeout(()=>shootStar(myGen),2200+Math.random()*2500);
+    }
+    raf=requestAnimationFrame(frame);
+  }
+  function resetIdle(){
+    gen++;cancelAnimationFrame(raf);clearTimeout(idleTimer);
+    ctx.clearRect(0,0,W,H);
+    idleTimer=setTimeout(()=>shootStar(gen),5000);
+  }
+  ['mousemove','keydown','scroll','click','touchstart'].forEach(e=>
+    window.addEventListener(e,resetIdle,{passive:true})
+  );
+  resetIdle();
+})();
+
 // init
 renderBrowse();
 route();
