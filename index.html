@@ -80,7 +80,10 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 .browse-switch{display:inline-flex;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:3px;gap:2px}
 .browse-tab{font-family:var(--ui);font-size:.96rem;letter-spacing:.06em;text-transform:uppercase;background:none;border:none;border-radius:5px;padding:5px 14px;cursor:pointer;color:var(--ink2);transition:.15s;line-height:1}
 .browse-tab:hover{color:var(--accent)}
-.browse-tab.active{background:#a78bfa;color:#fff}
+.browse-tab.active{color:#fff}
+.browse-tab.active[data-mode="form"]{background:var(--accent)}
+.browse-tab.active[data-mode="year"]{background:#a78bfa}
+.browse-tab.active[data-mode="theme"]{background:#5eead4;color:#1a4a44}
 .cloud{display:flex;flex-wrap:wrap;gap:10px}
 .cloud button{font-family:var(--serif);cursor:pointer;background:var(--bg2);border:1px solid var(--line);color:var(--ink2);border-radius:10px;padding:7px 14px;transition:.15s;font-size:.96rem}
 .cloud button:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
