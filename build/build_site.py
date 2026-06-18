@@ -8,9 +8,22 @@ ROOT = "/Users/labern/Desktop/Clean"
 OUT = f"{ROOT}/LegacyArchive"
 records = json.load(open(f"{OUT}/_records.json"))
 
+PROSE_TYPES = {"Short Story", "Novel", "Extract"}
+
+def normalize_prose(html):
+    # Collapse runs of 2+ <br> (paragraph breaks in WordPress exports) into </p><p>
+    html = re.sub(r'(\s*<br\s*/?>\s*){2,}', '</p><p>', html, flags=re.I)
+    # Clean up <p> directly after an opening <p> tag or at the very start
+    html = re.sub(r'<p>\s*</p>', '', html, flags=re.I)
+    html = re.sub(r'(<p[^>]*>)\s*</p><p>', r'\1', html, flags=re.I)
+    return html.strip()
+
 # trim payload to what the page needs
 works = []
 for r in records:
+    content = r["content"]
+    if r["type"] in PROSE_TYPES:
+        content = normalize_prose(content)
     works.append({
         "t": r["title"],
         "y": r["type"],
@@ -21,7 +34,7 @@ for r in records:
         "x": r["excerpt"],
         "w": r["words"],
         "txt": r["text"],
-        "c": r["content"],
+        "c": content,
     })
 
 types = [t for t, _ in Counter(w["y"] for w in works).most_common()]
