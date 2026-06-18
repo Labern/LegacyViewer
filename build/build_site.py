@@ -126,7 +126,8 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 .reader .back{font-family:var(--ui);font-size:.82rem;color:var(--ink3);display:inline-block;margin-bottom:32px;cursor:pointer}
 .reader .ribbon{font-family:var(--ui);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px}
 .reader h1{font-size:clamp(2rem,5vw,3rem);line-height:1.12;margin:0 0 14px;font-weight:700}
-.reader .meta{font-family:var(--ui);font-size:.82rem;color:var(--ink3);display:flex;flex-wrap:wrap;gap:14px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:34px}
+.reader .meta{font-family:var(--ui);font-size:.82rem;color:var(--ink3);display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:34px}
+.reader .meta .sep{opacity:.35;user-select:none}
 .reader .meta .tg{cursor:pointer}
 .reader .meta .tg:hover{color:var(--accent)}
 .prose{font-size:clamp(0.84rem, 0.64rem + 0.81vw, 1.10rem);line-height:1.85}
@@ -143,6 +144,9 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 .related{border-top:1px solid var(--line);margin-top:56px;padding-top:26px}
 .related .grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin-bottom:0}
 footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font-family:var(--ui);font-size:.8rem;color:var(--ink3);text-align:center;line-height:1.7}
+#scrollTop{position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:1.2rem;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.25);z-index:900}
+#scrollTop.visible{opacity:1;pointer-events:auto}
+#scrollTop:hover{transform:translateY(-3px)}
 .scan-btn{font-family:var(--ui);font-size:.78rem;cursor:pointer;background:var(--bg2);border:1px solid var(--line2);color:var(--ink2);padding:5px 13px;border-radius:999px;transition:.15s}
 .scan-btn:hover{border-color:var(--accent);color:var(--accent)}
 .scan-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -178,6 +182,7 @@ footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font
     <div id="resultsArea"></div>
     <div id="browseArea"></div>
   </div>
+  <button id="scrollTop" aria-label="Back to top">↑</button>
   <footer class="site"><div class="wrap">
     &copy; Luke Labern, 2008&ndash;2026 &middot; __N__ works &middot; A static, database-free archive &middot; everything here is searchable and clickable.
   </div></footer>
@@ -512,7 +517,7 @@ function renderReader(slug){
     r.innerHTML='<a class="back" id="backLink">← Back to the library</a>'
       +'<div class="ribbon">'+esc(w.y)+'</div>'
       +'<h1>'+esc(w.t)+'</h1>'
-      +'<div class="meta"><span>By Luke Labern</span><span>'+yr+'</span><span>'+w.w+' words</span>'+(tags?'<span>'+tags+'</span>':'')+(scanBtn?'<span>'+scanBtn+'</span>':'')+'</div>'
+      +'<div class="meta"><span>By Luke Labern</span><span class="sep">·</span><span>'+yr+'</span><span class="sep">·</span><span>'+w.w+' words</span>'+(tags?'<span class="sep">·</span><span>'+tags+'</span>':'')+(scanBtn?'<span class="sep">·</span><span>'+scanBtn+'</span>':'')+'</div>'
       +'<div id="proseView" class="prose">'+w.c+'</div>'
       +'<div id="scanView" class="scan-view hidden"></div>'
       +(rel.length?'<div class="related"><div class="section-title">Related writing</div><div class="grid">'+rel.map(x=>cardHTML(x,null)).join('')+'</div></div>':'');
@@ -603,6 +608,11 @@ const tt=el('#themeToggle');
 function setTheme(t){ document.documentElement.dataset.theme=t; tt.textContent=t==='dark'?'Light':'Dark'; try{localStorage.setItem('legacy-theme',t)}catch(e){} }
 tt.addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
 try{ const saved=localStorage.getItem('legacy-theme'); if(saved) setTheme(saved); }catch(e){}
+
+// scroll-to-top button
+const scrollTopBtn=el('#scrollTop');
+window.addEventListener('scroll',()=>scrollTopBtn.classList.toggle('visible',window.scrollY>300),{passive:true});
+scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 
 // init
 renderBrowse();
