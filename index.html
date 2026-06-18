@@ -79,6 +79,8 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 .cloud{display:flex;flex-wrap:wrap;gap:10px}
 .cloud button{font-family:var(--serif);cursor:pointer;background:var(--bg2);border:1px solid var(--line);color:var(--ink2);border-radius:10px;padding:7px 14px;transition:.15s;font-size:.96rem}
 .cloud button:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.cloud button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.cloud button.active .n{color:rgba(255,255,255,.75)}
 .cloud button .n{color:var(--ink3);font-size:.8rem;margin-left:6px}
 
 /* reader */
@@ -300,16 +302,10 @@ let activeType=null;
 function renderBrowse(){
   const browse = el('#browseArea');
   const typeCounts={}; WORKS.forEach(w=>typeCounts[w.y]=(typeCounts[w.y]||0)+1);
-  const tagCounts={}; WORKS.forEach(w=>(w.g||[]).forEach(g=>tagCounts[g]=(tagCounts[g]||0)+1));
-  const topTags=Object.entries(tagCounts).sort((a,b)=>b[1]-a[1]);
   const list = activeType?WORKS.filter(w=>w.y===activeType):WORKS.slice();
-  let html='<div class="section-title">Browse by form</div><div class="filters">';
-  html+='<button class="'+(activeType?'':'active')+'" data-type="">All ('+WORKS.length+')</button>';
-  for(const t of LITERARY){ if(!typeCounts[t]) continue; html+='<button class="'+(activeType===t?'active':'')+'" data-type="'+esc(t)+'">'+esc(t)+' ('+typeCounts[t]+')</button>'; }
-  html+='</div>';
-  html+='<div class="section-title">Browse by theme &amp; collection</div><div class="cloud">';
-  for(const [tag,n] of topTags){ html+='<button data-tag="'+esc(tag)+'">'+esc(tag)+'<span class="n">'+n+'</span></button>'; }
-  // a few thematic shortcuts
+  let html='<div class="section-title">Browse by form</div><div class="cloud">';
+  html+='<button class="'+(activeType?'':'active')+'" data-type="">All<span class="n">'+WORKS.length+'</span></button>';
+  for(const t of LITERARY){ if(!typeCounts[t]) continue; html+='<button class="'+(activeType===t?'active':'')+'" data-type="'+esc(t)+'">'+esc(t)+'<span class="n">'+typeCounts[t]+'</span></button>'; }
   html+='</div>';
   const label = activeType?activeType:'All works';
   html+='<div class="section-title">'+esc(label)+' · '+list.length+'</div>';
