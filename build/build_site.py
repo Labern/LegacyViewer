@@ -134,8 +134,8 @@ a:hover{text-decoration:underline;text-underline-offset:2px}
 .filters button.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
 /* grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin:18px 0 60px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;gap:9px;transition:transform .12s,border-color .12s;min-width:0;overflow-wrap:anywhere;aspect-ratio:1/1;overflow:hidden}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;margin:18px 0 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 28px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;gap:9px;transition:transform .12s,border-color .12s;min-width:0;overflow-wrap:anywhere;aspect-ratio:1/1;overflow:hidden}
 .card:hover{transform:translateY(-3px);border-color:var(--accent)}
 .card .ribbon{font-family:var(--ui);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600}
 .card h3{margin:0;font-size:1.14rem;line-height:1.2;font-weight:700}
@@ -205,9 +205,12 @@ footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font
 .scan-meta strong{color:var(--ink)}
 .hidden{display:none!important}
 @media (max-width:600px){body{font-size:17px}.hero{padding:40px 0 16px}.grid{grid-template-columns:1fr}.reader{padding-left:24px}}
+#bgStars{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 1.2s}
+[data-theme="zesty"] #bgStars{opacity:1}
 </style>
 </head>
 <body>
+<canvas id="bgStars"></canvas>
 <div class="topbar"><div class="wrap">
   <span class="brand" id="brand">Legacy<span class="dot">.</span> / Labern</span>
   <span class="spacer"></span>
@@ -775,6 +778,30 @@ scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smoot
   toast.querySelector('a').addEventListener('click',e=>e.stopPropagation());
   window.addEventListener('hashchange',()=>{ dismiss(); shown=false; if(!location.hash) scheduleToast(); });
   scheduleToast();
+})();
+
+// background twinkling stars (visible in zesty mode)
+(function(){
+  const cvs=el('#bgStars');
+  const ctx=cvs.getContext('2d');
+  function resize(){cvs.width=innerWidth;cvs.height=innerHeight;}
+  resize();
+  window.addEventListener('resize',resize,{passive:true});
+  const stars=Array.from({length:140},()=>({
+    x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+    r:Math.random()*1.4+0.2, d:Math.random()*.5+0.2, t:Math.random()*Math.PI*2
+  }));
+  function draw(){
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    ctx.fillStyle='#cbd5ff';
+    for(const s of stars){
+      s.t+=0.018*s.d;
+      ctx.globalAlpha=Math.max(0.05, 0.4+Math.sin(s.t)*0.4);
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
 })();
 
 // init
