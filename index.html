@@ -40,7 +40,8 @@
 [data-theme="zesty"] .cloud button:hover{box-shadow:0 0 14px rgba(94,234,212,0.12)}
 [data-theme="zesty"] .browse-switch{background:rgba(255,255,255,0.06);backdrop-filter:blur(6px)}
 [data-theme="zesty"] mark{background:rgba(94,234,212,0.25);color:#e8e8f0}
-[data-theme="zesty"] .reader{background:rgba(12,10,31,0.6);backdrop-filter:blur(12px);border-radius:16px;margin-top:24px}
+[data-theme="zesty"] .reader{background:rgba(12,10,31,0.6);backdrop-filter:blur(12px);border-radius:16px;margin-top:24px;padding-left:60px;padding-right:60px}
+[data-theme="zesty"] .reader.story{padding-left:60px;padding-right:60px}
 .iconbtn.zesty-on{background:linear-gradient(90deg,#5eead4,#a78bfa);color:#0c0a1f;border-color:transparent;font-weight:600}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -105,6 +106,10 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 .browse-tab.active[data-mode="form"]{background:var(--accent)}
 .browse-tab.active[data-mode="year"]{background:#a78bfa}
 .browse-tab.active[data-mode="theme"]{background:#5eead4;color:#1a4a44}
+/* instagram toast */
+#igToast{position:fixed;bottom:28px;left:28px;max-width:320px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;font-family:var(--ui);font-size:.82rem;color:var(--ink2);line-height:1.5;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .4s,transform .4s;z-index:900}
+#igToast.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+#igToast a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
 .cloud{display:flex;flex-wrap:wrap;gap:10px}
 .cloud button{font-family:var(--serif);cursor:pointer;background:var(--bg2);border:1px solid var(--line);color:var(--ink2);border-radius:10px;padding:7px 14px;transition:.15s;font-size:.96rem}
 .cloud button:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
@@ -317,11 +322,18 @@ function snippetFor(w, matched){
 
 function linesPreview(w, maxLines){
   const raw = w.c
-    .replace(/<br\s*\/?>\s*/gi,'\n').replace(/<[^>]+>/g,'')
+    .replace(/<br\s*\/?>\s*/gi,'\n').replace(/<p[^>]*>/gi,'\n').replace(/<[^>]+>/g,'')
     .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&[^;]+;/g,'');
   const lines = raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
-  const shown = lines.slice(0, maxLines).map(esc).join('<br>');
-  return shown + (lines.length > maxLines ? '<br><span style="color:var(--ink3)">…</span>' : '');
+  const CHAR_CAP=320;
+  let out='', chars=0, clipped=false;
+  for(let i=0;i<Math.min(lines.length,maxLines);i++){
+    const l=lines[i];
+    if(chars+l.length>CHAR_CAP){ out+=esc(l.slice(0,CHAR_CAP-chars))+'…'; clipped=true; break; }
+    out+=(i>0?'<br>':'')+esc(l); chars+=l.length;
+  }
+  const more=clipped||lines.length>maxLines;
+  return out+(more?'<br><span style="color:var(--ink3)">…</span>':'');
 }
 
 function cardHTML(w, matched){
@@ -618,7 +630,7 @@ const scrollTopBtn=el('#scrollTop');
 window.addEventListener('scroll',()=>scrollTopBtn.classList.toggle('visible',window.scrollY>300),{passive:true});
 scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 
-// idle shooting star
+// idle shooting star — curves from bottom-left to top-right
 (function(){
   const cvs=document.createElement('canvas');
   cvs.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:999;width:100%;height:100%';
@@ -629,39 +641,58 @@ scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smoot
   resize();
   window.addEventListener('resize',resize,{passive:true});
   let idleTimer=null,raf=null,gen=0;
+  // sample a quadratic bezier at t
+  function bez(p0,p1,p2,t){return (1-t)*(1-t)*p0+2*(1-t)*t*p1+t*t*p2;}
   function shootStar(myGen){
     if(myGen!==gen) return;
     const th=document.documentElement.dataset.theme;
     const col=th==='zesty'?'#a78bfa':th==='dark'?'#f06aa0':'#d23c77';
-    const sx=Math.random()*W*.5,sy=0;
-    const ang=Math.PI/5+Math.random()*.35;
-    const len=65+Math.random()*55;
-    const dur=650+Math.random()*350;
+    // start: bottom-left region; end: top-right region
+    const x0=W*.0+Math.random()*W*.25, y0=H*.7+Math.random()*H*.3;
+    const x2=W*.65+Math.random()*W*.35, y2=Math.random()*H*.3;
+    // control point pulls the arc outward (up and right)
+    const cx=x0+W*.05, cy=y2-H*.15;
+    const TRAIL=180; // trail length in bezier t-units (points sampled)
+    const dur=1100+Math.random()*400;
     const t0=performance.now();
     function frame(now){
       if(myGen!==gen){ctx.clearRect(0,0,W,H);return;}
       const p=Math.min((now-t0)/dur,1);
       const ease=p<.5?2*p*p:-1+(4-2*p)*p;
-      const d=ease*Math.hypot(W,H)*.7;
-      const hx=sx+Math.cos(ang)*d,hy=sy+Math.sin(ang)*d;
       const alpha=Math.sin(p*Math.PI);
       ctx.clearRect(0,0,W,H);
-      const g=ctx.createLinearGradient(hx-Math.cos(ang)*len,hy-Math.sin(ang)*len,hx,hy);
-      g.addColorStop(0,'rgba(255,255,255,0)');
-      g.addColorStop(.65,`rgba(255,255,255,${alpha*.55})`);
-      g.addColorStop(1,col);
+      // draw trail: sample N points behind the head along the bezier
+      const N=60;
       ctx.save();
       ctx.globalAlpha=alpha;
-      ctx.strokeStyle=g;ctx.lineWidth=2;
-      ctx.shadowColor=col;ctx.shadowBlur=18;
-      ctx.beginPath();
-      ctx.moveTo(hx-Math.cos(ang)*len,hy-Math.sin(ang)*len);
-      ctx.lineTo(hx,hy);ctx.stroke();
-      ctx.beginPath();ctx.arc(hx,hy,2.2,0,Math.PI*2);
-      ctx.fillStyle='#fff';ctx.shadowBlur=10;ctx.fill();
+      ctx.shadowColor=col;ctx.shadowBlur=28;
+      for(let i=0;i<N;i++){
+        const ti=Math.max(0,ease-(N-i)/N*0.28);
+        const ti1=Math.max(0,ease-(N-i-1)/N*0.28);
+        const ax=bez(x0,cx,x2,ti), ay=bez(y0,cy,y2,ti);
+        const bx=bez(x0,cx,x2,ti1), by=bez(y0,cy,y2,ti1);
+        const frac=i/N;
+        ctx.beginPath();
+        ctx.moveTo(ax,ay);ctx.lineTo(bx,by);
+        ctx.strokeStyle=`rgba(255,255,255,${frac*.7})`;
+        ctx.lineWidth=4+frac*10; // thick at head, thin at tail
+        ctx.stroke();
+      }
+      // glowing head
+      const hx=bez(x0,cx,x2,ease), hy=bez(y0,cy,y2,ease);
+      const grd=ctx.createRadialGradient(hx,hy,0,hx,hy,22);
+      grd.addColorStop(0,'rgba(255,255,255,1)');
+      grd.addColorStop(.35,col);
+      grd.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.beginPath();ctx.arc(hx,hy,22,0,Math.PI*2);
+      ctx.fillStyle=grd;ctx.shadowBlur=40;ctx.shadowColor=col;
+      ctx.fill();
+      // bright core
+      ctx.beginPath();ctx.arc(hx,hy,6,0,Math.PI*2);
+      ctx.fillStyle='#fff';ctx.shadowBlur=20;ctx.fill();
       ctx.restore();
       if(p<1) raf=requestAnimationFrame(frame);
-      else setTimeout(()=>shootStar(myGen),2200+Math.random()*2500);
+      else{ ctx.clearRect(0,0,W,H); setTimeout(()=>shootStar(myGen),2500+Math.random()*2500); }
     }
     raf=requestAnimationFrame(frame);
   }
@@ -674,6 +705,27 @@ scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smoot
     window.addEventListener(e,resetIdle,{passive:true})
   );
   resetIdle();
+})();
+
+// idle instagram toast (10s on home page)
+(function(){
+  const toast=document.createElement('div');
+  toast.id='igToast';
+  toast.innerHTML='If this material offended and/or inspired you, message me: <a href="https://instagram.com/labern" target="_blank" rel="noopener">@Labern</a> on Instagram';
+  document.body.appendChild(toast);
+  let shown=false, timer=null;
+  function scheduleToast(){
+    clearTimeout(timer);
+    if(shown) return;
+    timer=setTimeout(()=>{
+      if(!location.hash && !shown){ shown=true; toast.classList.add('visible'); }
+    },10000);
+  }
+  function onInteract(){ clearTimeout(timer); }
+  window.addEventListener('hashchange',()=>{ toast.classList.remove('visible'); shown=false; if(!location.hash) scheduleToast(); });
+  ['mousemove','keydown','scroll','click','touchstart'].forEach(e=>window.addEventListener(e,onInteract,{passive:true}));
+  toast.querySelector('a').addEventListener('click',e=>e.stopPropagation());
+  scheduleToast();
 })();
 
 // init
