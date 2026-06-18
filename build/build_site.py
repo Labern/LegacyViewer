@@ -698,11 +698,8 @@ scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smoot
     if(myGen!==gen) return;
     const th=document.documentElement.dataset.theme;
     const col=th==='zesty'?'#a78bfa':th==='dark'?'#f06aa0':'#d23c77';
-    // start: bottom-left region; end: top-right region
-    // randomise start along bottom/left edges, end along top/right edges
-    const fromBottom=Math.random()>.35;
-    const x0=fromBottom?Math.random()*W*.6:Math.random()*W*.2;
-    const y0=fromBottom?H*.6+Math.random()*H*.4:H*.3+Math.random()*H*.5;
+    // always start from very close to the bottom-left corner
+    const x0=Math.random()*W*.08, y0=H*.88+Math.random()*H*.12;
     const x2=W*.5+Math.random()*W*.5, y2=Math.random()*H*.4;
     // control point arcs the path outward
     const cx=(x0+x2)/2-W*.1, cy=(y0+y2)/2-H*.25;
