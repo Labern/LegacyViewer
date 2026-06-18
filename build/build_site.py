@@ -156,7 +156,7 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 .browse-tab.active[data-mode="year"]{background:#a78bfa}
 .browse-tab.active[data-mode="theme"]{background:#5eead4;color:#1a4a44}
 /* instagram toast */
-#igToast{position:fixed;bottom:28px;left:28px;max-width:320px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 44px 14px 18px;font-family:var(--ui);font-size:.82rem;color:var(--ink2);line-height:1.5;box-shadow:0 8px 32px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.06);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .4s,transform .4s;z-index:9999}
+#igToast{position:fixed;bottom:28px;left:28px;max-width:320px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px 44px 14px 18px;font-family:var(--ui);font-size:.82rem;color:var(--ink2);line-height:1.5;box-shadow:0 8px 32px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.08);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .4s,transform .4s;z-index:99999;isolation:isolate}
 #igToast.visible{opacity:1;transform:translateY(0);pointer-events:auto}
 #igToast a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
 #igToast .toast-x{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:var(--ink3);font-size:1.1rem;line-height:1;padding:2px 4px;border-radius:4px;transition:color .15s}
