@@ -21,6 +21,27 @@
   --line:#2c281f; --line2:#3a3429; --accent:#f06aa0; --accent-ink:#f48cb6;
   --mark:#5a2740; --card:#1c1813; --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px rgba(0,0,0,.4);
 }
+[data-theme="zesty"]{
+  --bg:#0c0a1f; --bg2:rgba(48,43,99,0.45); --ink:#e8e8f0; --ink2:#b6b6c9; --ink3:#7070a0;
+  --line:rgba(94,234,212,0.18); --line2:rgba(94,234,212,0.08); --accent:#5eead4; --accent-ink:#2dd4bf;
+  --mark:rgba(94,234,212,0.22); --card:rgba(255,255,255,0.04); --shadow:0 4px 32px rgba(94,234,212,0.08),0 0 0 1px rgba(94,234,212,0.05);
+}
+@keyframes zesty-drift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes zesty-shimmer{to{background-position:300% center}}
+[data-theme="zesty"] body{background:linear-gradient(-45deg,#0f0c29,#302b63,#24243e,#1a1a2e);background-size:400% 400%;animation:zesty-drift 18s ease infinite}
+[data-theme="zesty"] .topbar{background:rgba(12,10,31,0.82);border-bottom-color:rgba(94,234,212,0.12)}
+[data-theme="zesty"] .brand{background:linear-gradient(90deg,#5eead4,#a78bfa,#f472b6,#5eead4);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:zesty-shimmer 6s linear infinite}
+[data-theme="zesty"] .hero h1{background:linear-gradient(90deg,#f472b6,#a78bfa,#5eead4,#f472b6);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:zesty-shimmer 8s linear infinite}
+[data-theme="zesty"] .card{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+[data-theme="zesty"] .card:hover{box-shadow:0 0 28px rgba(94,234,212,0.14),0 0 0 1px rgba(94,234,212,0.3)}
+[data-theme="zesty"] .searchbox input{background:rgba(255,255,255,0.05);border-color:rgba(94,234,212,0.2)}
+[data-theme="zesty"] .searchbox input:focus{border-color:#5eead4;box-shadow:0 0 0 3px rgba(94,234,212,0.1)}
+[data-theme="zesty"] .cloud button{background:rgba(255,255,255,0.04);backdrop-filter:blur(4px)}
+[data-theme="zesty"] .cloud button:hover{box-shadow:0 0 14px rgba(94,234,212,0.12)}
+[data-theme="zesty"] .browse-switch{background:rgba(255,255,255,0.06);backdrop-filter:blur(6px)}
+[data-theme="zesty"] mark{background:rgba(94,234,212,0.25);color:#e8e8f0}
+[data-theme="zesty"] .reader{background:rgba(12,10,31,0.6);backdrop-filter:blur(12px);border-radius:16px;margin-top:24px}
+.iconbtn.zesty-on{background:linear-gradient(90deg,#5eead4,#a78bfa);color:#0c0a1f;border-color:transparent;font-weight:600}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
@@ -41,7 +62,7 @@ a:hover{text-decoration:underline;text-underline-offset:2px}
 /* hero */
 .hero{padding:76px 0 30px;text-align:center}
 .hero h1{font-size:clamp(3.2rem,10vw,6.4rem);margin:0;line-height:1.04;letter-spacing:-.01em;font-weight:700}
-.hero .tag{font-family:var(--ui);text-transform:uppercase;letter-spacing:.3em;font-size:.72rem;color:var(--ink3);margin:34px 0 0}
+.hero .tag{font-family:var(--ui);text-transform:uppercase;letter-spacing:.3em;font-size:.88rem;color:var(--ink3);margin:34px 0 0}
 .hero .stats{margin-top:18px;color:var(--ink3);font-style:italic;font-size:1rem}
 
 /* search */
@@ -134,6 +155,7 @@ footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font
 <div class="topbar"><div class="wrap">
   <span class="brand" id="brand">Legacy<span class="dot">.</span> / Labern</span>
   <span class="spacer"></span>
+  <button class="iconbtn" id="zestyToggle">Zesty</button>
   <button class="iconbtn" id="themeToggle">Dark</button>
 </div></div>
 
@@ -577,9 +599,18 @@ el('#suggest').innerHTML=SUGGEST.map(s=>'<button>'+s+'</button>').join('');
 el('#suggest').addEventListener('click',e=>{ if(e.target.tagName==='BUTTON'){ qInput.value=e.target.textContent; onQuery(); } });
 
 // theme toggle
-const tt=el('#themeToggle');
-function setTheme(t){ document.documentElement.dataset.theme=t; tt.textContent=t==='dark'?'Light':'Dark'; try{localStorage.setItem('legacy-theme',t)}catch(e){} }
-tt.addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
+const tt=el('#themeToggle'), tz=el('#zestyToggle');
+function setTheme(t){
+  document.documentElement.dataset.theme=t;
+  tt.textContent=t==='dark'?'Light':'Dark';
+  tz.classList.toggle('zesty-on', t==='zesty');
+  try{localStorage.setItem('legacy-theme',t)}catch(e){}
+}
+tt.addEventListener('click',()=>{
+  const cur=document.documentElement.dataset.theme;
+  setTheme(cur==='dark'||cur==='zesty'?'light':'dark');
+});
+tz.addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='zesty'?'light':'zesty'));
 try{ const saved=localStorage.getItem('legacy-theme'); if(saved) setTheme(saved); }catch(e){}
 
 // scroll-to-top button
