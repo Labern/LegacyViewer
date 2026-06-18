@@ -102,7 +102,7 @@ a:hover{text-decoration:underline;text-underline-offset:2px}
 
 /* topbar */
 .topbar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid var(--line)}
-.topbar .wrap{display:flex;align-items:center;gap:16px;height:58px}
+.topbar .wrap{display:flex;align-items:center;gap:16px;height:58px;padding:0 8px}
 .brand{font-weight:700;letter-spacing:.04em;cursor:pointer;font-size:1rem}
 .brand .dot{color:var(--accent)}
 .topbar .spacer{flex:1}
@@ -772,12 +772,13 @@ scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smoot
     +'<button class="toast-x" aria-label="Dismiss">&times;</button>';
   document.body.appendChild(toast);
   let shown=false, showTimer=null, hideTimer=null;
+  let dismissed=false;
   function dismiss(){ toast.classList.remove('visible'); clearTimeout(hideTimer); }
   function show(){
-    if(!location.hash && !shown){ shown=true; toast.classList.add('visible'); hideTimer=setTimeout(dismiss,5000); }
+    if(!location.hash && !shown && !dismissed){ shown=true; toast.classList.add('visible'); hideTimer=setTimeout(dismiss,5000); }
   }
-  function scheduleToast(){ clearTimeout(showTimer); if(shown) return; showTimer=setTimeout(show,10000); }
-  toast.querySelector('.toast-x').addEventListener('click',e=>{ e.stopPropagation(); dismiss(); });
+  function scheduleToast(){ clearTimeout(showTimer); if(shown||dismissed) return; showTimer=setTimeout(show,10000); }
+  toast.querySelector('.toast-x').addEventListener('click',e=>{ e.stopPropagation(); dismissed=true; dismiss(); });
   toast.querySelector('a').addEventListener('click',e=>e.stopPropagation());
   window.addEventListener('hashchange',()=>{ dismiss(); shown=false; if(!location.hash) scheduleToast(); });
   scheduleToast();
