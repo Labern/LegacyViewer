@@ -206,7 +206,7 @@ footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font
 .hidden{display:none!important}
 @media (max-width:600px){body{font-size:17px}.hero{padding:40px 0 16px}.grid{grid-template-columns:1fr}.reader{padding-left:24px}}
 #bgStars{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 1.2s}
-[data-theme="zesty"] #bgStars{opacity:1}
+[data-stars="1"] #bgStars{opacity:1}
 </style>
 </head>
 <body>
@@ -668,15 +668,18 @@ el('#suggest').addEventListener('click',e=>{ if(e.target.tagName==='BUTTON'){ qI
 const tt=el('#themeToggle'), tz=el('#zestyToggle');
 function setTheme(t){
   document.documentElement.dataset.theme=t;
+  if(t!=='zesty'){ delete document.documentElement.dataset.stars; tz.textContent='Zesty'; }
   tt.textContent=t==='light'?'Dark':'Light';
   tz.classList.toggle('zesty-on', t==='zesty');
   try{localStorage.setItem('legacy-theme',t)}catch(e){}
 }
-tt.addEventListener('click',()=>{
-  const cur=document.documentElement.dataset.theme;
-  setTheme(cur==='light'?'dark':'light');
+tt.addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light'));
+tz.addEventListener('click',()=>{
+  if(document.documentElement.dataset.theme!=='zesty'){ setTheme('zesty'); return; }
+  const starsOn=document.documentElement.dataset.stars==='1';
+  document.documentElement.dataset.stars=starsOn?'0':'1';
+  tz.textContent=starsOn?'Zesty':'Zesty *';
 });
-tz.addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='zesty'?'light':'zesty'));
 try{ const saved=localStorage.getItem('legacy-theme'); if(saved) setTheme(saved); }catch(e){}
 
 // scroll-to-top button
