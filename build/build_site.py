@@ -138,6 +138,13 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 .related{border-top:1px solid var(--line);margin-top:56px;padding-top:26px}
 .related .grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin-bottom:0}
 footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font-family:var(--ui);font-size:.8rem;color:var(--ink3);text-align:center;line-height:1.7}
+.scan-btn{font-family:var(--ui);font-size:.78rem;cursor:pointer;background:var(--bg2);border:1px solid var(--line2);color:var(--ink2);padding:5px 13px;border-radius:999px;transition:.15s}
+.scan-btn:hover{border-color:var(--accent);color:var(--accent)}
+.scan-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.scan-view{font-size:clamp(0.84rem, 0.64rem + 0.81vw, 1.10rem);line-height:1.85;font-family:var(--serif)}
+.scan-view b{font-weight:700;font-style:normal}
+.scan-meta{margin-top:2.2rem;padding:1.1rem 1.3rem;background:var(--bg2);border:1px solid var(--line);border-radius:12px;font-family:var(--ui);font-size:.84rem;color:var(--ink2);line-height:1.7}
+.scan-meta strong{color:var(--ink)}
 .hidden{display:none!important}
 @media (max-width:600px){body{font-size:17px}.hero{padding:40px 0 16px}.grid{grid-template-columns:1fr}.reader{padding-left:24px}}
 </style>
@@ -356,6 +363,70 @@ function renderBrowse(){
   browse.innerHTML=html;
 }
 
+/* ---------- scansion engine ---------- */
+const POETIC = new Set(['Poem','Sonnet','Ode','Song']);
+
+// Common function words — typically unstressed in iambic verse
+const FW = new Set(['the','a','an','and','but','or','nor','in','on','at','to','of','by','from','with',
+  'as','if','when','while','where','though','that','this','these','those','which','who','what',
+  'my','his','her','thy','thine','their','our','its','your','i','am','is','are','was','were',
+  'be','been','have','has','had','do','does','did','not','so','for','yet','than','then','o','ah','oh','it']);
+
+function countSyls(word){
+  word=word.toLowerCase().replace(/[^a-z]/g,'');
+  if(!word) return 0;
+  let n=(word.match(/[aeiouy]+/g)||[]).length;
+  // silent terminal e: "compare" → 2, not 3
+  if(word.length>2 && word.endsWith('e') && !'aeiouy'.includes(word[word.length-2])) n=Math.max(1,n-1);
+  // -le after consonant adds a syllable: "little" → 2
+  if(word.length>2 && word.endsWith('le') && !'aeiouy'.includes(word[word.length-3])) n++;
+  return Math.max(1,n);
+}
+
+function scanPoem(htmlContent){
+  // Extract lines, preserving structure
+  const lines = htmlContent
+    .replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&[^;]+;/g,' ')
+    .split('\n').map(l=>l.trim()).filter(l=>l.length>0 && l.length<200);
+
+  const scannedLines = lines.map(line=>{
+    const tokens=(line.match(/[a-zA-Z’']+|[^a-zA-Z’']+/g)||[]);
+    let pos=0; // running syllable index (0-based); in iambic: odd positions are stressed
+    return tokens.map(tok=>{
+      if(!/[a-zA-Z]/.test(tok)) return esc(tok);
+      const lower=tok.toLowerCase().replace(/[^a-z']/g,'');
+      const n=countSyls(lower);
+      const isFW=FW.has(lower);
+      // First syllable of word lands at `pos`; in iambic da-DUM: position 1,3,5...=stressed (odd, 0-based)
+      const firstSylStressed = (pos%2===1);
+      pos+=n;
+      if(isFW) return esc(tok); // function words: never bold
+      if(n===1) return firstSylStressed?'<b>'+esc(tok)+'</b>':esc(tok);
+      // Multi-syllable: bold whole word if primary (first) syllable is on a stressed beat
+      return firstSylStressed?'<b>'+esc(tok)+'</b>':esc(tok);
+    }).join('');
+  });
+
+  // Meter identification: count syllables per line
+  const sylCounts=lines.map(line=>{
+    return (line.match(/[a-zA-Z’']+/g)||[]).reduce((s,w)=>s+countSyls(w),0);
+  });
+  const sorted=[...sylCounts].sort((a,b)=>a-b);
+  const median=sorted[Math.floor(sorted.length/2)];
+  const within1=sylCounts.filter(c=>Math.abs(c-median)<=1).length;
+  const pct=Math.round(100*within1/Math.max(1,sylCounts.length));
+
+  let meter='Free verse';
+  if(median>=9&&median<=11) meter='Iambic pentameter';
+  else if(median>=7&&median<=8) meter='Iambic tetrameter';
+  else if(median>=5&&median<=6) meter='Iambic trimeter';
+  else if(median>=12&&median<=14) meter='Alexandrine (iambic hexameter)';
+  else if(median>=13) meter='Fourteener';
+
+  return {html:scannedLines.join('<br>'), meter, median, pct, lineCount:lines.length};
+}
+
 /* ---------- reader ---------- */
 function renderReader(slug){
   const w = WORKS.find(x=>x.s===slug);
@@ -364,15 +435,44 @@ function renderReader(slug){
   else{
     const yr = w.d?new Date(w.d).toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'}):(w.yr||'Undated');
     const tags=(w.g||[]).map(g=>'<span class="tg" data-tag="'+esc(g)+'">'+esc(g)+'</span>').join(' · ');
-    // related: same type or shared tag, by recency
     const rel = WORKS.filter(x=>x.s!==w.s && (x.y===w.y || (x.g||[]).some(g=>(w.g||[]).includes(g))))
       .sort((a,b)=>(b.w-a.w)).slice(0,4);
+    const scanBtn = POETIC.has(w.y) ? '<button class="scan-btn" id="scanBtn">Scansion mode</button>' : '';
     r.innerHTML='<a class="back" id="backLink">← Back to the library</a>'
       +'<div class="ribbon">'+esc(w.y)+'</div>'
       +'<h1>'+esc(w.t)+'</h1>'
-      +'<div class="meta"><span>By Luke Labern</span><span>'+yr+'</span><span>'+w.w+' words</span>'+(tags?'<span>'+tags+'</span>':'')+'</div>'
-      +'<div class="prose">'+w.c+'</div>'
+      +'<div class="meta"><span>By Luke Labern</span><span>'+yr+'</span><span>'+w.w+' words</span>'+(tags?'<span>'+tags+'</span>':'')+(scanBtn?'<span>'+scanBtn+'</span>':'')+'</div>'
+      +'<div id="proseView" class="prose">'+w.c+'</div>'
+      +'<div id="scanView" class="scan-view hidden"></div>'
       +(rel.length?'<div class="related"><div class="section-title">Related writing</div><div class="grid">'+rel.map(x=>cardHTML(x,null)).join('')+'</div></div>':'');
+
+    // wire scansion toggle
+    const btn=el('#scanBtn');
+    if(btn){
+      btn.addEventListener('click',()=>{
+        const pv=el('#proseView'), sv=el('#scanView');
+        const on=btn.classList.toggle('on');
+        if(on){
+          if(!sv.dataset.built){
+            const result=scanPoem(w.c);
+            sv.innerHTML=result.html
+              +'<div class="scan-meta">'
+              +'<strong>'+result.meter+'</strong>'
+              +' &middot; median '+result.median+' syllables/line'
+              +' &middot; '+result.pct+'% of lines within 1 syllable of median'
+              +'<br><em>Bold = word\'s first syllable falls on a metrically stressed beat (iambic da-DUM pattern assumed). '
+              +'Function words are never bolded. Multi-syllable words are treated as a unit.</em>'
+              +'</div>';
+            sv.dataset.built='1';
+          }
+          pv.classList.add('hidden'); sv.classList.remove('hidden');
+          btn.textContent='Reading mode';
+        } else {
+          sv.classList.add('hidden'); pv.classList.remove('hidden');
+          btn.textContent='Scansion mode';
+        }
+      });
+    }
   }
   el('#home').classList.add('hidden');
   r.classList.remove('hidden');
