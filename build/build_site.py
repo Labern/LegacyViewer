@@ -171,15 +171,15 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 /* reader */
 .reader{max-width:880px;margin:0 auto;padding:46px 24px 90px 120px}
 .reader.story{max-width:890px;padding:46px 48px 90px 48px}
-.reader.story .prose{font-size:clamp(0.74rem,0.56rem + 0.68vw,0.92rem);line-height:1.8}
+.reader.story .prose{font-size:clamp(0.80rem,0.60rem + 0.75vw,1.02rem);line-height:1.8}
 .reader .back{font-family:var(--ui);font-size:.82rem;color:var(--ink3);display:inline-block;margin-bottom:32px;cursor:pointer}
 .reader .ribbon{font-family:var(--ui);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px}
-.reader h1{font-size:clamp(1.5rem,3.5vw,2.2rem);line-height:1.12;margin:0 0 14px;font-weight:700}
+.reader h1{font-size:clamp(2rem,5vw,3rem);line-height:1.12;margin:0 0 14px;font-weight:700}
 .reader .meta{font-family:var(--ui);font-size:.82rem;color:var(--ink3);display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:34px}
 .reader .meta .sep{opacity:.35;user-select:none}
 .reader .meta .tg{cursor:pointer}
 .reader .meta .tg:hover{color:var(--accent)}
-.prose{font-size:clamp(0.76rem,0.58rem + 0.70vw,0.96rem);line-height:1.85}
+.prose{font-size:clamp(0.84rem, 0.64rem + 0.81vw, 1.10rem);line-height:1.85}
 .prose p{margin:0 0 1.3em}
 .prose em,.prose i{font-style:italic}
 .prose strong,.prose b{font-weight:700}
@@ -192,6 +192,8 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 .prose hr{border:none;border-top:1px solid var(--line);margin:2em 0}
 .related{border-top:1px solid var(--line);margin-top:56px;padding-top:26px}
 .related .grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin-bottom:0}
+.related .card h3{font-size:0.92rem}
+.related .card .snippet{font-size:0.74rem}
 footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font-family:var(--ui);font-size:.8rem;color:var(--ink3);text-align:center;line-height:1.7}
 #scrollTop{position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:.85rem;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.25);z-index:900}
 #scrollTop.visible{opacity:1;pointer-events:auto}
