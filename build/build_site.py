@@ -304,13 +304,23 @@ function snippetFor(w, matched){
   return s;
 }
 
+function linesPreview(w, maxLines){
+  const raw = w.c
+    .replace(/<br\s*\/?>\s*/gi,'\n').replace(/<[^>]+>/g,'')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&[^;]+;/g,'');
+  const lines = raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  const shown = lines.slice(0, maxLines).map(esc).join('<br>');
+  return shown + (lines.length > maxLines ? '<br><span style="color:var(--ink3)">…</span>' : '');
+}
+
 function cardHTML(w, matched){
   const yr = w.yr?('· '+w.yr):'';
   const why = (matched&&matched.length)?('<span class="why">'+matched.slice(0,3).map(esc).join(', ')+'</span>'):'';
+  const snippet = (matched&&matched.length) ? snippetFor(w,matched) : linesPreview(w,5);
   return '<div class="card" data-s="'+w.s+'">'
     + '<div class="ribbon">'+esc(w.y)+'</div>'
     + '<h3>'+esc(w.t)+'</h3>'
-    + '<div class="snippet">'+snippetFor(w, matched)+'</div>'
+    + '<div class="snippet">'+snippet+'</div>'
     + '<div class="foot"><span>'+w.w+' words '+yr+'</span>'+why+'</div></div>';
 }
 
