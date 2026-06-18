@@ -63,7 +63,7 @@ a:hover{text-decoration:underline;text-underline-offset:2px}
 .filters button.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
 /* grid */
-.grid{display:grid;grid-template-columns:1fr;gap:16px;margin:18px 0 60px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin:18px 0 60px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;gap:9px;transition:transform .12s,border-color .12s;min-width:0;overflow-wrap:anywhere}
 .card:hover{transform:translateY(-3px);border-color:var(--accent)}
 .card .ribbon{font-family:var(--ui);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600}
