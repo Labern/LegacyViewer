@@ -629,7 +629,7 @@ tz.addEventListener('click',()=>{
   if(document.documentElement.dataset.theme!=='zesty'){ setTheme('zesty'); return; }
   const starsOn=document.documentElement.dataset.stars==='1';
   document.documentElement.dataset.stars=starsOn?'0':'1';
-  tz.textContent=starsOn?'Zesty':'Zesty *';
+  tz.textContent=starsOn?'Zesty':'Zesty ✦';
 });
 try{ const saved=localStorage.getItem('legacy-theme'); if(saved) setTheme(saved); }catch(e){}
 
