@@ -90,6 +90,8 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 
 /* reader */
 .reader{max-width:880px;margin:0 auto;padding:46px 24px 90px 120px}
+.reader.story{max-width:800px;padding:46px 48px 90px 48px}
+.reader.story .prose{font-size:clamp(0.80rem,0.60rem + 0.75vw,1.02rem);line-height:1.8}
 .reader .back{font-family:var(--ui);font-size:.82rem;color:var(--ink3);display:inline-block;margin-bottom:32px;cursor:pointer}
 .reader .ribbon{font-family:var(--ui);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px}
 .reader h1{font-size:clamp(2rem,5vw,3rem);line-height:1.12;margin:0 0 14px;font-weight:700}
@@ -111,7 +113,7 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 .related{border-top:1px solid var(--line);margin-top:56px;padding-top:26px}
 .related .grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin-bottom:0}
 footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font-family:var(--ui);font-size:.8rem;color:var(--ink3);text-align:center;line-height:1.7}
-#scrollTop{position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:1.2rem;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.25);z-index:900}
+#scrollTop{position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:.85rem;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.25);z-index:900}
 #scrollTop.visible{opacity:1;pointer-events:auto}
 #scrollTop:hover{transform:translateY(-3px)}
 .scan-btn{font-family:var(--ui);font-size:.78rem;cursor:pointer;background:var(--bg2);border:1px solid var(--line2);color:var(--ink2);padding:5px 13px;border-radius:999px;transition:.15s}
@@ -474,8 +476,9 @@ function scanPoem(htmlContent){
 function renderReader(slug){
   const w = WORKS.find(x=>x.s===slug);
   const r = el('#reader');
-  if(!w){ r.innerHTML='<a class="back" id="backLink">← Back</a><p>Not found.</p>'; }
+  if(!w){ r.className='reader'; r.innerHTML='<a class="back" id="backLink">← Back</a><p>Not found.</p>'; }
   else{
+    r.className='reader'+(w.y==='Short Story'||w.y==='Novel'||w.y==='Extract'?' story':'');
     const yr = w.d?new Date(w.d).toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'}):(w.yr||'Undated');
     const tags=(w.g||[]).map(g=>'<span class="tg" data-tag="'+esc(g)+'">'+esc(g)+'</span>').join(' · ');
     const rel = WORKS.filter(x=>x.s!==w.s && (x.y===w.y || (x.g||[]).some(g=>(w.g||[]).includes(g))))
