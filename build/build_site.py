@@ -79,7 +79,7 @@ a:hover{text-decoration:underline;text-underline-offset:2px}
 
 /* search */
 .searchbox{position:relative;max-width:680px;margin:42px auto 4px}
-.searchbox input{width:100%;font-family:var(--serif);font-size:1.15rem;padding:17px 50px 17px 22px;border-radius:14px;border:1px solid var(--line2);background:var(--card);color:var(--ink);box-shadow:var(--shadow);outline:none;transition:border-color .15s}
+.searchbox input{width:100%;font-family:var(--serif);font-size:0.9rem;padding:17px 50px 17px 22px;border-radius:14px;border:1px solid var(--line2);background:var(--card);color:var(--ink);box-shadow:var(--shadow);outline:none;transition:border-color .15s}
 .searchbox input:focus{border-color:var(--accent)}
 .searchbox .clear{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--ink3);font-size:1.4rem;line-height:1;background:none;border:none;display:none}
 .searchbox.has-text .clear{display:block}
@@ -157,7 +157,7 @@ footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font
     <p class="stats" id="heroStats"></p>
     <div class="searchbox" id="sbox">
       <input id="q" type="text" autocomplete="off" spellcheck="false"
-        placeholder="Search by theme or form, e.g. sonnet, death, love">
+        placeholder="Search by theme / form — e.g. sonnet death, love">
       <button class="clear" id="clear" title="Clear">&times;</button>
     </div>
     <div class="chip-suggest" id="suggest"></div>
