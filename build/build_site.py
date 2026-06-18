@@ -157,7 +157,7 @@ footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font
     <p class="stats" id="heroStats"></p>
     <div class="searchbox" id="sbox">
       <input id="q" type="text" autocomplete="off" spellcheck="false"
-        placeholder="Search by theme — try &ldquo;sonnet death&rdquo;, &ldquo;love&rdquo;, &ldquo;nihilism&rdquo;&hellip;">
+        placeholder="Search by theme or form, e.g. sonnet, death, love">
       <button class="clear" id="clear" title="Clear">&times;</button>
     </div>
     <div class="chip-suggest" id="suggest"></div>
