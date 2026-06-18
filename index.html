@@ -89,8 +89,8 @@ a:hover{text-decoration:underline;text-underline-offset:2px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;gap:9px;transition:transform .12s,border-color .12s;min-width:0;overflow-wrap:anywhere}
 .card:hover{transform:translateY(-3px);border-color:var(--accent)}
 .card .ribbon{font-family:var(--ui);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600}
-.card h3{margin:0;font-size:1.28rem;line-height:1.2;font-weight:700}
-.card .snippet{color:var(--ink2);font-size:.94rem;line-height:1.5}
+.card h3{margin:0;font-size:1.14rem;line-height:1.2;font-weight:700}
+.card .snippet{color:var(--ink2);font-size:.84rem;line-height:1.5}
 .card .foot{font-family:var(--ui);font-size:.74rem;color:var(--ink3);display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:auto}
 .card .why{color:var(--accent-ink)}
 mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
@@ -648,10 +648,13 @@ scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smoot
     const th=document.documentElement.dataset.theme;
     const col=th==='zesty'?'#a78bfa':th==='dark'?'#f06aa0':'#d23c77';
     // start: bottom-left region; end: top-right region
-    const x0=W*.0+Math.random()*W*.25, y0=H*.7+Math.random()*H*.3;
-    const x2=W*.65+Math.random()*W*.35, y2=Math.random()*H*.3;
-    // control point pulls the arc outward (up and right)
-    const cx=x0+W*.05, cy=y2-H*.15;
+    // randomise start along bottom/left edges, end along top/right edges
+    const fromBottom=Math.random()>.35;
+    const x0=fromBottom?Math.random()*W*.6:Math.random()*W*.2;
+    const y0=fromBottom?H*.6+Math.random()*H*.4:H*.3+Math.random()*H*.5;
+    const x2=W*.5+Math.random()*W*.5, y2=Math.random()*H*.4;
+    // control point arcs the path outward
+    const cx=(x0+x2)/2-W*.1, cy=(y0+y2)/2-H*.25;
     const TRAIL=180; // trail length in bezier t-units (points sampled)
     const dur=1100+Math.random()*400;
     const t0=performance.now();
@@ -692,7 +695,7 @@ scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smoot
       ctx.fillStyle='#fff';ctx.shadowBlur=20;ctx.fill();
       ctx.restore();
       if(p<1) raf=requestAnimationFrame(frame);
-      else{ ctx.clearRect(0,0,W,H); setTimeout(()=>shootStar(myGen),2500+Math.random()*2500); }
+      else{ ctx.clearRect(0,0,W,H); setTimeout(()=>shootStar(myGen),10000); }
     }
     raf=requestAnimationFrame(frame);
   }
