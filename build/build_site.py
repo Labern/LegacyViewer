@@ -135,7 +135,7 @@ a:hover{text-decoration:underline;text-underline-offset:2px}
 
 /* grid */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin:18px 0 60px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;gap:9px;transition:transform .12s,border-color .12s;min-width:0;overflow-wrap:anywhere}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;gap:9px;transition:transform .12s,border-color .12s;min-width:0;overflow-wrap:anywhere;aspect-ratio:1/1;overflow:hidden}
 .card:hover{transform:translateY(-3px);border-color:var(--accent)}
 .card .ribbon{font-family:var(--ui);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600}
 .card h3{margin:0;font-size:1.14rem;line-height:1.2;font-weight:700}
@@ -156,9 +156,11 @@ mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:3px}
 .browse-tab.active[data-mode="year"]{background:#a78bfa}
 .browse-tab.active[data-mode="theme"]{background:#5eead4;color:#1a4a44}
 /* instagram toast */
-#igToast{position:fixed;bottom:28px;left:28px;max-width:320px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;font-family:var(--ui);font-size:.82rem;color:var(--ink2);line-height:1.5;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .4s,transform .4s;z-index:900}
+#igToast{position:fixed;bottom:28px;left:28px;max-width:320px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 44px 14px 18px;font-family:var(--ui);font-size:.82rem;color:var(--ink2);line-height:1.5;box-shadow:0 8px 32px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.06);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .4s,transform .4s;z-index:9999}
 #igToast.visible{opacity:1;transform:translateY(0);pointer-events:auto}
 #igToast a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+#igToast .toast-x{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:var(--ink3);font-size:1.1rem;line-height:1;padding:2px 4px;border-radius:4px;transition:color .15s}
+#igToast .toast-x:hover{color:var(--ink)}
 .cloud{display:flex;flex-wrap:wrap;gap:10px}
 .cloud button{font-family:var(--serif);cursor:pointer;background:var(--bg2);border:1px solid var(--line);color:var(--ink2);border-radius:10px;padding:7px 14px;transition:.15s;font-size:.96rem}
 .cloud button:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
@@ -763,20 +765,18 @@ scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smoot
 (function(){
   const toast=document.createElement('div');
   toast.id='igToast';
-  toast.innerHTML='If this material offended and/or inspired you, message me: <a href="https://instagram.com/labern" target="_blank" rel="noopener">@Labern</a> on Instagram';
+  toast.innerHTML='If this material offended and/or inspired you, message me: <a href="https://instagram.com/labern" target="_blank" rel="noopener">@Labern</a> on Instagram'
+    +'<button class="toast-x" aria-label="Dismiss">&times;</button>';
   document.body.appendChild(toast);
-  let shown=false, timer=null;
-  function scheduleToast(){
-    clearTimeout(timer);
-    if(shown) return;
-    timer=setTimeout(()=>{
-      if(!location.hash && !shown){ shown=true; toast.classList.add('visible'); }
-    },10000);
+  let shown=false, showTimer=null, hideTimer=null;
+  function dismiss(){ toast.classList.remove('visible'); clearTimeout(hideTimer); }
+  function show(){
+    if(!location.hash && !shown){ shown=true; toast.classList.add('visible'); hideTimer=setTimeout(dismiss,5000); }
   }
-  function onInteract(){ clearTimeout(timer); }
-  window.addEventListener('hashchange',()=>{ toast.classList.remove('visible'); shown=false; if(!location.hash) scheduleToast(); });
-  ['mousemove','keydown','scroll','click','touchstart'].forEach(e=>window.addEventListener(e,onInteract,{passive:true}));
+  function scheduleToast(){ clearTimeout(showTimer); if(shown) return; showTimer=setTimeout(show,10000); }
+  toast.querySelector('.toast-x').addEventListener('click',e=>{ e.stopPropagation(); dismiss(); });
   toast.querySelector('a').addEventListener('click',e=>e.stopPropagation());
+  window.addEventListener('hashchange',()=>{ dismiss(); shown=false; if(!location.hash) scheduleToast(); });
   scheduleToast();
 })();
 
