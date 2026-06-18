@@ -79,8 +79,8 @@ HTML = r"""<!DOCTYPE html>
 @keyframes zesty-shimmer{to{background-position:300% center}}
 [data-theme="zesty"] body{background:linear-gradient(-45deg,#0f0c29,#302b63,#24243e,#1a1a2e);background-size:400% 400%;animation:zesty-drift 18s ease infinite}
 [data-theme="zesty"] .topbar{background:rgba(12,10,31,0.82);border-bottom-color:rgba(94,234,212,0.12)}
-[data-theme="zesty"] .brand{background:linear-gradient(90deg,#5eead4,#a78bfa,#f472b6,#5eead4);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:zesty-shimmer 6s linear infinite}
-[data-theme="zesty"] .hero h1{background:linear-gradient(90deg,#f472b6,#a78bfa,#5eead4,#f472b6);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:zesty-shimmer 8s linear infinite}
+[data-theme="zesty"] .brand{background:linear-gradient(90deg,#5eead4,#a78bfa,#f472b6,#5eead4);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:zesty-shimmer 6s linear infinite;padding:0 0.05em}
+[data-theme="zesty"] .hero h1{background:linear-gradient(90deg,#f472b6,#a78bfa,#5eead4,#f472b6);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:zesty-shimmer 8s linear infinite;padding:0 0.04em 0.05em;display:inline-block}
 [data-theme="zesty"] .card{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 [data-theme="zesty"] .card:hover{box-shadow:0 0 28px rgba(94,234,212,0.14),0 0 0 1px rgba(94,234,212,0.3)}
 [data-theme="zesty"] .searchbox input{background:rgba(255,255,255,0.05);border-color:rgba(94,234,212,0.2)}
