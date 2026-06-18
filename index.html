@@ -425,7 +425,7 @@ function renderReader(slug){
     const tags=(w.g||[]).map(g=>'<span class="tg" data-tag="'+esc(g)+'">'+esc(g)+'</span>').join(' · ');
     const rel = WORKS.filter(x=>x.s!==w.s && (x.y===w.y || (x.g||[]).some(g=>(w.g||[]).includes(g))))
       .sort((a,b)=>(b.w-a.w)).slice(0,4);
-    const scanBtn = POETIC.has(w.y) ? '<button class="scan-btn" id="scanBtn">Scansion mode</button>' : '';
+    const scanBtn = POETIC.has(w.y) ? '<button class="scan-btn" id="scanBtn">Scansion mode (Beta)</button>' : '';
     r.innerHTML='<a class="back" id="backLink">← Back to the library</a>'
       +'<div class="ribbon">'+esc(w.y)+'</div>'
       +'<h1>'+esc(w.t)+'</h1>'
@@ -457,7 +457,7 @@ function renderReader(slug){
           btn.textContent='Reading mode';
         } else {
           sv.classList.add('hidden'); pv.classList.remove('hidden');
-          btn.textContent='Scansion mode';
+          btn.textContent='Scansion mode (Beta)';
         }
       });
     }
