@@ -72,13 +72,13 @@ a:hover{text-decoration:underline;text-underline-offset:2px}
 .iconbtn:hover{border-color:var(--accent);color:var(--accent)}
 
 /* hero */
-.hero{padding:62px 0 22px;text-align:center}
-.hero h1{font-size:clamp(3.2rem,10vw,6.4rem);margin:0;line-height:.92;letter-spacing:-.01em;font-weight:700}
-.hero .tag{font-family:var(--ui);text-transform:uppercase;letter-spacing:.3em;font-size:.7rem;color:var(--ink3);margin:20px 0 0}
-.hero .stats{margin-top:8px;color:var(--ink3);font-style:italic;font-size:1rem}
+.hero{padding:76px 0 30px;text-align:center}
+.hero h1{font-size:clamp(3.2rem,10vw,6.4rem);margin:0;line-height:1.04;letter-spacing:-.01em;font-weight:700}
+.hero .tag{font-family:var(--ui);text-transform:uppercase;letter-spacing:.3em;font-size:.72rem;color:var(--ink3);margin:34px 0 0}
+.hero .stats{margin-top:18px;color:var(--ink3);font-style:italic;font-size:1rem}
 
 /* search */
-.searchbox{position:relative;max-width:680px;margin:28px auto 4px}
+.searchbox{position:relative;max-width:680px;margin:42px auto 4px}
 .searchbox input{width:100%;font-family:var(--serif);font-size:1.15rem;padding:17px 50px 17px 22px;border-radius:14px;border:1px solid var(--line2);background:var(--card);color:var(--ink);box-shadow:var(--shadow);outline:none;transition:border-color .15s}
 .searchbox input:focus{border-color:var(--accent)}
 .searchbox .clear{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--ink3);font-size:1.4rem;line-height:1;background:none;border:none;display:none}
@@ -96,8 +96,8 @@ a:hover{text-decoration:underline;text-underline-offset:2px}
 .filters button.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
 /* grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin:18px 0 60px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;gap:9px;transition:transform .12s,border-color .12s}
+.grid{display:grid;grid-template-columns:1fr;gap:16px;margin:18px 0 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;gap:9px;transition:transform .12s,border-color .12s;min-width:0;overflow-wrap:anywhere}
 .card:hover{transform:translateY(-3px);border-color:var(--accent)}
 .card .ribbon{font-family:var(--ui);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600}
 .card h3{margin:0;font-size:1.28rem;line-height:1.2;font-weight:700}
@@ -142,7 +142,7 @@ footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font
 </head>
 <body>
 <div class="topbar"><div class="wrap">
-  <span class="brand" id="brand">Legacy<span class="dot">.</span></span>
+  <span class="brand" id="brand">Legacy<span class="dot">.</span> / Labern</span>
   <span class="spacer"></span>
   <button class="iconbtn" id="themeToggle">Dark</button>
 </div></div>
@@ -175,6 +175,9 @@ footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font
 <script>
 const WORKS = __DATA__;
 const TYPES = __TYPES__;
+// Only literary forms get their own browse-by-form chip. Everything else
+// (Blog, Album Review, Journalism, Song, …) is still reachable via "All".
+const LITERARY = ["Poem","Sonnet","Ode","Short Story","Novel","Essay","Prose","Play","Extract"];
 WORKS.forEach((w,i)=>{w.i=i; w._t=(w.t||'').toLowerCase(); w._txt=(w.txt||'').toLowerCase(); w._g=(w.g||[]).map(s=>s.toLowerCase());});
 
 /* ---------- theme lexicon: query word -> related words ---------- */
@@ -335,7 +338,7 @@ function renderBrowse(){
   const list = activeType?WORKS.filter(w=>w.y===activeType):WORKS.slice();
   let html='<div class="section-title">Browse by form</div><div class="filters">';
   html+='<button class="'+(activeType?'':'active')+'" data-type="">All ('+WORKS.length+')</button>';
-  for(const t of TYPES){ html+='<button class="'+(activeType===t?'active':'')+'" data-type="'+esc(t)+'">'+esc(t)+' ('+typeCounts[t]+')</button>'; }
+  for(const t of LITERARY){ if(!typeCounts[t]) continue; html+='<button class="'+(activeType===t?'active':'')+'" data-type="'+esc(t)+'">'+esc(t)+' ('+typeCounts[t]+')</button>'; }
   html+='</div>';
   html+='<div class="section-title">Browse by theme &amp; collection</div><div class="cloud">';
   for(const [tag,n] of topTags){ html+='<button data-tag="'+esc(tag)+'">'+esc(tag)+'<span class="n">'+n+'</span></button>'; }
