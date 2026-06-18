@@ -364,19 +364,19 @@ function renderBrowse(){
 }
 
 /* ---------- scansion engine ---------- */
-const POETIC = new Set([‘Poem’,’Sonnet’,’Ode’,’Song’]);
+const POETIC = new Set(['Poem','Sonnet','Ode','Song']);
 
-const FW = new Set([‘the’,’a’,’an’,’and’,’but’,’or’,’nor’,’in’,’on’,’at’,’to’,’of’,’by’,’from’,’with’,
-  ‘as’,’if’,’when’,’while’,’where’,’though’,’that’,’this’,’these’,’those’,’which’,’who’,’what’,
-  ‘my’,’his’,’her’,’thy’,’thine’,’their’,’our’,’its’,’your’,’i’,’am’,’is’,’are’,’was’,’were’,
-  ‘be’,’been’,’have’,’has’,’had’,’do’,’does’,’did’,’not’,’so’,’for’,’yet’,’than’,’then’,’o’,’ah’,’oh’,’it’]);
+const FW = new Set(['the','a','an','and','but','or','nor','in','on','at','to','of','by','from','with',
+  'as','if','when','while','where','though','that','this','these','those','which','who','what',
+  'my','his','her','thy','thine','their','our','its','your','i','am','is','are','was','were',
+  'be','been','have','has','had','do','does','did','not','so','for','yet','than','then','o','ah','oh','it']);
 
 function syllabify(word){
   // Split a word into its graphical syllable chunks.
   // Returns array of strings that concatenate back to the original word.
   const w=word.toLowerCase();
   if(w.length<=1) return [word];
-  const isV=c=>’aeiouy’.includes(c);
+  const isV=c=>'aeiouy'.includes(c);
   // 1. Find vowel cluster positions [start, end)
   let clusters=[];
   for(let i=0;i<w.length;){
@@ -395,13 +395,13 @@ function syllabify(word){
   splits.push(w.length);
   let syls=[];
   for(let k=0;k<splits.length-1;k++) syls.push(word.slice(splits[k],splits[k+1]));
-  // 3. Merge terminal silent ‘e’: "more" → ["mor","e"] → ["more"]
-  if(syls.length>=2 && syls[syls.length-1].toLowerCase()===’e’)
+  // 3. Merge terminal silent 'e': "more" → ["mor","e"] → ["more"]
+  if(syls.length>=2 && syls[syls.length-1].toLowerCase()==='e')
     syls=[...syls.slice(0,-2),syls[syls.length-2]+syls[syls.length-1]];
   // 4. Merge sonorant+"-ed"/"-es" endings: "mattered" → ["mat","ter","ed"] → ["mat","tered"]
   if(syls.length>=3){
     const last=syls[syls.length-1].toLowerCase(),prev=syls[syls.length-2].toLowerCase();
-    if((last===’ed’||last===’es’)&&/[rlmn]$/.test(prev))
+    if((last==='ed'||last==='es')&&/[rlmn]$/.test(prev))
       syls=[...syls.slice(0,-2),syls[syls.length-2]+syls[syls.length-1]];
   }
   return syls;
@@ -409,43 +409,43 @@ function syllabify(word){
 
 function scanPoem(htmlContent){
   const lines=htmlContent
-    .replace(/<br\s*\/?>/gi,’\n’).replace(/<[^>]+>/g,’’)
-    .replace(/&amp;/g,’&’).replace(/&lt;/g,’<’).replace(/&gt;/g,’>’).replace(/&[^;]+;/g,’ ‘)
-    .split(‘\n’).map(l=>l.trim()).filter(l=>l.length>0&&l.length<200);
+    .replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&[^;]+;/g,' ')
+    .split('\n').map(l=>l.trim()).filter(l=>l.length>0&&l.length<200);
 
   const scannedLines=lines.map(line=>{
-    const tokens=(line.match(/[a-zA-Z’’]+|[^a-zA-Z’’]+/g)||[]);
+    const tokens=(line.match(/[a-zA-Z'']+|[^a-zA-Z'']+/g)||[]);
     let pos=0;
     return tokens.map(tok=>{
       if(!/[a-zA-Z]/.test(tok)) return esc(tok);
-      const lower=tok.toLowerCase().replace(/[^a-z’]/g,’’);
+      const lower=tok.toLowerCase().replace(/[^a-z']/g,'');
       const lsyls=syllabify(lower);  // syllable splits computed from lowercase
       const n=lsyls.length;
       if(FW.has(lower)){pos+=n;return esc(tok);}
       // Map syllable lengths back onto original-cased token
-      let idx=0,html=’’,boldDone=false;
+      let idx=0,html='',boldDone=false;
       for(let si=0;si<n;si++){
         const chunk=tok.slice(idx,idx+lsyls[si].length);idx+=lsyls[si].length;
         // Bold the first syllable that falls on a metrically stressed (odd, 0-based) beat
-        if(!boldDone&&(pos+si)%2===1){html+=’<b>’+esc(chunk)+’</b>’;boldDone=true;}
+        if(!boldDone&&(pos+si)%2===1){html+='<b>'+esc(chunk)+'</b>';boldDone=true;}
         else html+=esc(chunk);
       }
       pos+=n;return html;
-    }).join(‘’);
+    }).join('');
   });
 
   const sylCounts=lines.map(line=>
-    (line.match(/[a-zA-Z’’]+/g)||[]).reduce((s,w)=>s+syllabify(w.toLowerCase().replace(/[^a-z’]/g,’’)).length,0)
+    (line.match(/[a-zA-Z'']+/g)||[]).reduce((s,w)=>s+syllabify(w.toLowerCase().replace(/[^a-z']/g,'')).length,0)
   );
   const sorted=[...sylCounts].sort((a,b)=>a-b);
   const median=sorted[Math.floor(sorted.length/2)];
   const pct=Math.round(100*sylCounts.filter(c=>Math.abs(c-median)<=1).length/Math.max(1,sylCounts.length));
-  let meter=’Free verse’;
-  if(median>=9&&median<=11) meter=’Iambic pentameter’;
-  else if(median>=7&&median<=8) meter=’Iambic tetrameter’;
-  else if(median>=5&&median<=6) meter=’Iambic trimeter’;
-  else if(median>=12&&median<=14) meter=’Alexandrine (iambic hexameter)’;
-  return {html:scannedLines.join(‘<br>’),meter,median,pct,lineCount:lines.length};
+  let meter='Free verse';
+  if(median>=9&&median<=11) meter='Iambic pentameter';
+  else if(median>=7&&median<=8) meter='Iambic tetrameter';
+  else if(median>=5&&median<=6) meter='Iambic trimeter';
+  else if(median>=12&&median<=14) meter='Alexandrine (iambic hexameter)';
+  return {html:scannedLines.join('<br>'),meter,median,pct,lineCount:lines.length};
 }
 
 /* ---------- reader ---------- */
