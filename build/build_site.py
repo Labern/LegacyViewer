@@ -206,7 +206,7 @@ footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font
 .scan-meta{margin-top:2.2rem;padding:1.1rem 1.3rem;background:var(--bg2);border:1px solid var(--line);border-radius:12px;font-family:var(--ui);font-size:.84rem;color:var(--ink2);line-height:1.7}
 .scan-meta strong{color:var(--ink)}
 .hidden{display:none!important}
-@media (max-width:600px){body{font-size:17px}.hero{padding:40px 0 16px}.grid{grid-template-columns:1fr}.reader{padding-left:24px}}
+@media (max-width:600px){body{font-size:19px}.hero{padding:40px 0 16px}.grid{grid-template-columns:1fr}.reader{padding:32px 20px 60px 20px}.reader.story{padding:32px 20px 60px 20px}[data-theme="zesty"] .reader,[data-theme="zesty"] .reader.story{padding:32px 20px 60px 20px}.prose{font-size:1.15rem;line-height:1.95}.reader.story .prose{font-size:1.12rem;line-height:1.92}.reader h1{font-size:1.8rem}.reader .meta{font-size:.9rem}.reader .ribbon{font-size:.8rem}.topbar .brand{font-size:1.1rem}}
 #bgStars{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 1.2s}
 [data-stars="1"] #bgStars{opacity:1}
 </style>
@@ -682,7 +682,7 @@ tz.addEventListener('click',()=>{
   document.documentElement.dataset.stars=starsOn?'0':'1';
   tz.textContent=starsOn?'Zesty':'Zesty ✦';
 });
-try{ const saved=localStorage.getItem('legacy-theme'); if(saved) setTheme(saved); }catch(e){}
+try{ const saved=localStorage.getItem('legacy-theme'); if(saved) setTheme(saved); else setTheme(document.documentElement.dataset.theme||'zesty'); }catch(e){ setTheme('zesty'); }
 
 // scroll-to-top button
 const scrollTopBtn=el('#scrollTop');
