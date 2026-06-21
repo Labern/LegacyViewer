@@ -682,7 +682,7 @@ tz.addEventListener('click',()=>{
   document.documentElement.dataset.stars=starsOn?'0':'1';
   tz.textContent=starsOn?'Zesty':'Zesty ✦';
 });
-try{ const saved=localStorage.getItem('legacy-theme'); if(saved) setTheme(saved); }catch(e){}
+try{ const saved=localStorage.getItem('legacy-theme'); if(saved) setTheme(saved); else setTheme(document.documentElement.dataset.theme||'zesty'); }catch(e){ setTheme('zesty'); }
 
 // scroll-to-top button
 const scrollTopBtn=el('#scrollTop');
