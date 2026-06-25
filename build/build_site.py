@@ -48,7 +48,7 @@ data_json = json.dumps(works, ensure_ascii=False)
 data_json = data_json.replace("</", "<\\/").replace(" ", "\\u2028").replace(" ", "\\u2029")
 
 HTML = r"""<!DOCTYPE html>
-<html lang="en" data-theme="zesty">
+<html lang="en" data-theme="paradox">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -92,6 +92,44 @@ HTML = r"""<!DOCTYPE html>
 [data-theme="zesty"] .reader{background:rgba(12,10,31,0.6);backdrop-filter:blur(12px);border-radius:16px;margin-top:24px;padding-left:60px;padding-right:60px}
 [data-theme="zesty"] .reader.story{padding-left:60px;padding-right:60px}
 .iconbtn.zesty-on{background:linear-gradient(90deg,#5eead4,#a78bfa);color:#0c0a1f;border-color:transparent;font-weight:600}
+/* ======== PARADOX theme — ★★★★★ × PARADOX, the archive rendered as a terminal ======== */
+[data-theme="paradox"]{
+  --bg:#17132e; --bg2:#1c1740; --ink:#cfcae6; --ink2:#a39ec9; --ink3:#8787af;
+  --line:rgba(135,95,215,0.30); --line2:rgba(135,95,215,0.16); --accent:#87d7d7; --accent-ink:#9fe6e6;
+  --mark:rgba(255,215,95,0.24); --card:rgba(28,23,64,0.66); --shadow:0 0 0 1px rgba(135,95,215,0.16),0 12px 34px rgba(0,0,0,.5);
+  --gold:#ffd75f; --violet:#af87ff; --pink:#ff87ff; --dim:#6c6c8a;
+  --mono:"Menlo","SF Mono","Consolas",ui-monospace,"Liberation Mono",monospace;
+}
+@keyframes paradox-drift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes paradox-blink{50%{opacity:0}}
+[data-theme="paradox"] body{background:linear-gradient(-45deg,#17132e,#1c1740,#241d44,#160f2b);background-size:400% 400%;animation:paradox-drift 24s ease infinite;font-family:var(--mono)}
+[data-theme="paradox"] .prose{font-family:var(--serif)}
+[data-theme="paradox"] .topbar{background:rgba(18,15,36,0.86);border-bottom-color:rgba(135,95,215,0.22)}
+[data-theme="paradox"] .brand{font-family:var(--mono);color:var(--violet);text-transform:uppercase;letter-spacing:1px;font-weight:700}
+[data-theme="paradox"] .brand::before{content:"> ";color:var(--accent)}
+[data-theme="paradox"] .brand .dot{color:var(--accent)}
+[data-theme="paradox"] .hero h1{background:linear-gradient(90deg,#87d7d7,#af87ff,#ff87ff,#87d7d7);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:zesty-shimmer 8s linear infinite;font-family:var(--mono);text-transform:uppercase;letter-spacing:2px;display:inline-block;line-height:1.12;padding:0 .06em .14em}
+[data-theme="paradox"] .hero .tag,[data-theme="paradox"] .hero .stats{font-family:var(--mono);text-transform:uppercase;letter-spacing:2px;font-size:.82rem}
+[data-theme="paradox"] .card{border-radius:3px;border:1px solid var(--line);background:var(--card);backdrop-filter:blur(8px)}
+[data-theme="paradox"] .card:hover{box-shadow:0 0 0 1px var(--gold),0 0 22px rgba(255,215,95,0.15)}
+[data-theme="paradox"] .iconbtn,[data-theme="paradox"] .browse-switch,[data-theme="paradox"] .browse-tab,[data-theme="paradox"] .cloud button,[data-theme="paradox"] .back,[data-theme="paradox"] .scan-btn{border-radius:3px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px}
+[data-theme="paradox"] .searchbox input{font-family:var(--mono);border-radius:3px;background:rgba(135,95,215,0.08);border-color:var(--line)}
+[data-theme="paradox"] .searchbox input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(135,215,215,0.12)}
+[data-theme="paradox"] .chip-suggest button{border-radius:3px;font-family:var(--mono);letter-spacing:.5px}
+[data-theme="paradox"] mark{background:var(--mark);color:#fff3cf}
+[data-theme="paradox"] .section-title{color:var(--gold);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono)}
+[data-theme="paradox"] .reader{background:rgba(23,19,46,0.6);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:6px;margin-top:24px}
+[data-theme="paradox"] .reader h1{font-family:var(--mono);color:var(--violet)}
+[data-theme="paradox"] .reader .meta,[data-theme="paradox"] .ribbon{font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--gold)}
+[data-theme="paradox"] .resultmeta{font-family:var(--mono);color:var(--accent)}
+[data-theme="paradox"] a{color:var(--accent-ink)}
+.iconbtn.paradox-on{background:linear-gradient(90deg,#87d7d7,#af87ff);color:#17132e;border-color:transparent;font-weight:700}
+#termbar{display:none}
+[data-theme="paradox"] #termbar{display:flex;align-items:center;gap:8px;padding:7px 14px;background:#120f24;border-bottom:1px solid rgba(135,95,215,0.22);font-family:var(--mono)}
+#termbar .tl{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+#termbar .tl-r{background:#ff5f57}#termbar .tl-y{background:#febc2e}#termbar .tl-g{background:#28c840}
+#termbar .termtitle{flex:1;text-align:center;color:var(--dim,#6c6c8a);font-size:.72rem;letter-spacing:.5px}
+#termbar .termcursor{color:#87d7d7;animation:paradox-blink 1.1s steps(1) infinite}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
@@ -212,10 +250,12 @@ footer.site{border-top:1px solid var(--line);padding:30px 0;margin-top:30px;font
 </style>
 </head>
 <body>
+<div id="termbar"><span class="tl tl-r"></span><span class="tl tl-y"></span><span class="tl tl-g"></span><span class="termtitle">legacy — zsh — labern.archive<span class="termcursor">▍</span></span></div>
 <canvas id="bgStars"></canvas>
 <div class="topbar"><div class="wrap">
   <span class="brand" id="brand">Legacy<span class="dot">.</span> / Labern</span>
   <span class="spacer"></span>
+  <button class="iconbtn" id="paradoxToggle">Paradox</button>
   <button class="iconbtn" id="zestyToggle">Zesty</button>
   <button class="iconbtn" id="themeToggle">Dark</button>
 </div></div>
@@ -667,22 +707,24 @@ el('#suggest').innerHTML=SUGGEST.map(s=>'<button>'+s+'</button>').join('');
 el('#suggest').addEventListener('click',e=>{ if(e.target.tagName==='BUTTON'){ qInput.value=e.target.textContent; onQuery(); } });
 
 // theme toggle
-const tt=el('#themeToggle'), tz=el('#zestyToggle');
+const tt=el('#themeToggle'), tz=el('#zestyToggle'), tp=el('#paradoxToggle');
 function setTheme(t){
   document.documentElement.dataset.theme=t;
   if(t!=='zesty'){ delete document.documentElement.dataset.stars; tz.textContent='Zesty'; }
   tt.textContent=t==='light'?'Dark':'Light';
   tz.classList.toggle('zesty-on', t==='zesty');
+  tp.classList.toggle('paradox-on', t==='paradox');
   try{localStorage.setItem('legacy-theme',t)}catch(e){}
 }
 tt.addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light'));
+tp.addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='paradox'?'dark':'paradox'));
 tz.addEventListener('click',()=>{
   if(document.documentElement.dataset.theme!=='zesty'){ setTheme('zesty'); return; }
   const starsOn=document.documentElement.dataset.stars==='1';
   document.documentElement.dataset.stars=starsOn?'0':'1';
   tz.textContent=starsOn?'Zesty':'Zesty ✦';
 });
-try{ const saved=localStorage.getItem('legacy-theme'); if(saved) setTheme(saved); else setTheme(document.documentElement.dataset.theme||'zesty'); }catch(e){ setTheme('zesty'); }
+try{ const saved=localStorage.getItem('legacy-theme'); if(saved) setTheme(saved); else setTheme(document.documentElement.dataset.theme||'paradox'); }catch(e){ setTheme('paradox'); }
 
 // scroll-to-top button
 const scrollTopBtn=el('#scrollTop');

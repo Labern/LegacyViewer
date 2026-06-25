@@ -65,8 +65,10 @@ if m:
 print("\n[Themes]")
 check("Zesty theme CSS exists",      '[data-theme="zesty"]' in content)
 check("Dark theme CSS exists",       '[data-theme="dark"]' in content)
+check("Paradox theme CSS exists",    '[data-theme="paradox"]' in content)
 check("CSS accent variable defined", "--accent:" in content)
 check("Zesty bg gradient present",   "0f0c29" in content)
+check("Paradox bg gradient present", "17132e" in content)
 
 # ── mobile media query ───────────────────────────────────────────────────────
 print("\n[Mobile]")
@@ -87,21 +89,25 @@ print("\n[UI]")
 check("Reader element present",      'id="reader"' in content)
 check("bgStars canvas present",      'id="bgStars"' in content)
 check("Zesty toggle button present", 'id="zestyToggle"' in content)
+check("Paradox toggle button present", 'id="paradoxToggle"' in content)
+check("Terminal chrome bar present", 'id="termbar"' in content)
 check("Theme toggle button present", 'id="themeToggle"' in content)
 check("Scroll-to-top button",        'id="scrollTop"' in content)
 check("Instagram toast present",     "igToast" in content)
 check("Browse switch present",       'class="browse-switch"' in content)
 check("Shooting star JS present",    "shootStar" in content)
 
-# ── zesty default init ───────────────────────────────────────────────────────
-print("\n[Zesty default]")
+# ── paradox default init ─────────────────────────────────────────────────────
+print("\n[Paradox default]")
 check("setTheme called on first load (no saved theme)",
       "else setTheme(" in content,
-      "first-load fallback missing — Zesty button won't highlight on fresh visit")
+      "first-load fallback missing — Paradox button won't highlight on fresh visit")
 check("zesty-on class toggled in setTheme",
       "zesty-on" in content)
-check("data-theme=zesty on <html>",
-      'data-theme="zesty"' in content)
+check("paradox-on class toggled in setTheme",
+      "paradox-on" in content)
+check("data-theme=paradox on <html>",
+      'data-theme="paradox"' in content)
 
 # ── CSS grid / cards ─────────────────────────────────────────────────────────
 print("\n[Cards]")
